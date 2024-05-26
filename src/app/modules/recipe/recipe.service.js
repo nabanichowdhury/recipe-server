@@ -77,25 +77,30 @@ const updateWatchCount = async (recipeId, customerEmail) => {
     return response;
   }
 };
-const getAllRecipes = async () => {
+const getAllRecipes = async (page, limit) => {
+  const skip = (page - 1) * limit;
   const result = await recipes.find().toArray();
-  if (result.length > 0) {
-    const response = {
-      statusCode: 200,
-      success: true,
-      message: "Recipes found successfully!",
-      data: result,
-    };
-    return response;
-  } else {
-    const response = {
-      statusCode: 404,
-      success: false,
-      message: "No recipes found!",
-      data: result,
-    };
-    return response;
-  }
+  const paginatedResult = await recipes
+    .find()
+    .skip(skip)
+    .limit(limit)
+    .toArray();
+  const totalRecipes = await recipes.countDocuments();
+  const totalPages = Math.ceil(totalRecipes / limit);
+
+  const response = {
+    statusCode: 200,
+    success: true,
+    message: "Recipes found successfully!",
+    data: paginatedResult,
+
+    page,
+    limit,
+    totalRecipes,
+    totalPages,
+  };
+
+  return response;
 };
 
 const getRecipeById = async (id) => {

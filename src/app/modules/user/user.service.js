@@ -1,13 +1,25 @@
 import { users } from "../../../server.js";
 
 const createUser = async (userData) => {
+  console.log("userData from service", userData);
   const result = await users.insertOne(userData);
-  const response = {
-    statusCode: 201,
-    success: true,
-    message: "User created successfully!",
-    data: result,
-  };
+
+  let response;
+  if (result !== null) {
+    response = {
+      statusCode: 200,
+      success: true,
+      message: "User found successfully!",
+      data: result,
+    };
+  } else {
+    response = {
+      statusCode: 404,
+      success: false,
+      message: "User not found!",
+      data: result,
+    };
+  }
   return response;
 };
 

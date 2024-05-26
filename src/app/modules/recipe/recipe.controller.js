@@ -16,7 +16,9 @@ const postRecipe = async (req, res) => {
 };
 
 const getAllRecipes = async (req, res) => {
-  const data = await RecipeService.getAllRecipes();
+  const page = parseInt(req.query.page) || 1;
+  const limit = parseInt(req.query.limit) || 10;
+  const data = await RecipeService.getAllRecipes(page, limit);
 
   //   const responseData = {
   //     statusCode: data.statusCode,
