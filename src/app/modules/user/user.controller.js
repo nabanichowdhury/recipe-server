@@ -27,4 +27,17 @@ const getUser = async (req, res) => {
   res.status(200).json(data);
 };
 
-export const UserController = { createUser, getUser };
+const updateUserCoin = async (req, res) => {
+  const userData = req.body;
+  const data = await UserService.updateUserCoin(userData);
+
+  //   const responseData = {
+  //     statusCode: data.statusCode,
+  //     success: data.success,
+  //     message: data.message || null,
+  //     data: data.data || null,
+  //   };
+  res.status(200).json(data);
+};
+
+export const UserController = { createUser, getUser, updateUserCoin };

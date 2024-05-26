@@ -11,7 +11,72 @@ const postRecipe = async (data) => {
   };
   return response;
 };
+const updateWatchCount = async (recipeId, customerEmail) => {
+  try {
+    console.log("inside updateWatchCount", recipeId, customerEmail);
+    const recipe = await recipes.findOne({ _id: new ObjectId(recipeId) });
+    console.log("recipe", recipe);
+    if (!recipe) {
+      // console.log("Recipe not found");
+      const response = {
+        statusCode: 404,
+        success: false,
+        message: "Recipe not found",
+      };
+      return response;
+    }
 
+    let updateOperation;
+
+    if (!recipe.watchCount || typeof recipe.watchCount !== "number") {
+      // watchCount field doesn't exist or has an invalid data type
+      updateOperation = {
+        $set: { watchCount: 1 },
+      };
+    } else {
+      // watchCount field exists and has a valid data type
+      updateOperation = {
+        $inc: { watchCount: 1 },
+      };
+    }
+    updateOperation.$push = { purchasedBy: customerEmail };
+
+    const result = await recipes.updateOne(
+      { _id: new ObjectId(recipeId) },
+      updateOperation,
+      { returnOriginal: false }
+    );
+    // console.log("result", result);
+
+    const updatedRecipe = result;
+
+    if (!updatedRecipe) {
+      const response = {
+        statusCode: 404,
+        success: false,
+        message: "Recipe not found",
+      };
+      return response;
+    }
+
+    const response = {
+      statusCode: 200,
+      success: true,
+      message: "Watch count updated successfully",
+      data: updatedRecipe,
+    };
+    return response;
+  } catch (error) {
+    // console.error("Error updating watch count:", error);
+    const response = {
+      statusCode: 500,
+      success: false,
+      message: "An error occurred while updating the watch count",
+      error: error.message,
+    };
+    return response;
+  }
+};
 const getAllRecipes = async () => {
   const result = await recipes.find().toArray();
   if (result.length > 0) {
@@ -34,7 +99,7 @@ const getAllRecipes = async () => {
 };
 
 const getRecipeById = async (id) => {
-  console.log("RecipeId", id);
+  // console.log("RecipeId", id);
   const result = await recipes.findOne({ _id: id });
   let response;
   if (result !== null) {
@@ -52,9 +117,14 @@ const getRecipeById = async (id) => {
       data: result,
     };
   }
-  console.log("response", response);
+  // console.log("response", response);
 
   return response;
 };
 
-export const RecipeService = { postRecipe, getAllRecipes, getRecipeById };
+export const RecipeService = {
+  postRecipe,
+  getAllRecipes,
+  getRecipeById,
+  updateWatchCount,
+};

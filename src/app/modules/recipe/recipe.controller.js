@@ -34,4 +34,17 @@ const getSingleRecipe = async (req, res) => {
   res.status(200).json(data);
 };
 
-export const RecipeController = { postRecipe, getAllRecipes, getSingleRecipe };
+const updateCount = async (req, res) => {
+  const id = req.params.id;
+  const customerEmail = req.body.name;
+  console.log(id, customerEmail);
+  const result = await RecipeService.updateWatchCount(id, customerEmail);
+  res.status(200).json(result);
+};
+
+export const RecipeController = {
+  postRecipe,
+  getAllRecipes,
+  getSingleRecipe,
+  updateCount,
+};
